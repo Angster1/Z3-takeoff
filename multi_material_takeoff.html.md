@@ -1,0 +1,1656 @@
+#   
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+  <meta charset="UTF-8" />  
+  <title>Multi-Material Plumbing Takeoff (Copper / CI / PVC / ABS / Black Iron)</title>  
+  <meta name="viewport" content="width=device-width, initial-scale=1" />  
+  <style>  
+    body {  
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;  
+      margin: 0;  
+      padding: 0;  
+      background: #f5f5f5;  
+      color: #222;  
+    }  
+    #app {  
+      max-width: 1200px;  
+      margin: 0 auto;  
+      padding: 10px 10px 30px;  
+    }  
+    h1 {  
+      font-size: 1.4rem;  
+      margin: 8px 0 10px;  
+      text-align: center;  
+    }  
+    h2 {  
+      font-size: 1.1rem;  
+      margin: 10px 0 6px;  
+    }  
+    .card {  
+      background: white;  
+      padding: 10px;  
+      margin-bottom: 10px;  
+      border-radius: 6px;  
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);  
+    }  
+    table {  
+      border-collapse: collapse;  
+      width: 100%;  
+      font-size: 0.9rem;  
+    }  
+    th, td {  
+      border-bottom: 1px solid #ddd;  
+      padding: 4px 6px;  
+      text-align: left;  
+      vertical-align: middle;  
+    }  
+    th {  
+      background: #eee;  
+      font-weight: 600;  
+    }  
+    .group-row th {  
+      background: #ddd;  
+      font-weight: 700;  
+      padding-top: 6px;  
+      padding-bottom: 4px;  
+    }  
+    .qty-cell {  
+      text-align: center;  
+      min-width: 40px;  
+    }  
+    .btn {  
+      display: inline-block;  
+      padding: 3px 7px;  
+      margin: 0;  
+      border-radius: 4px;  
+      border: 1px solid #888;  
+      background: #fafafa;  
+      font-size: 0.75rem;  
+      cursor: pointer;  
+      user-select: none;  
+    }  
+    .btn:hover {  
+      background: #f0f0f0;  
+    }  
+    .btn-primary {  
+      background: #0077cc;  
+      color: white;  
+      border-color: #0077cc;  
+    }  
+    .btn-primary:hover {  
+      background: #0060a6;  
+    }  
+    .btn-danger {  
+      background: #cc3333;  
+      color: white;  
+      border-color: #cc3333;  
+    }  
+    .btn-danger:hover {  
+      background: #b02b2b;  
+    }  
+    .controls-row {  
+      display: flex;  
+      flex-wrap: wrap;  
+      gap: 8px;  
+      align-items: center;  
+      margin-bottom: 6px;  
+    }  
+    .controls-row label {  
+      font-size: 0.85rem;  
+    }  
+    input[type="text"], select {  
+      padding: 4px 6px;  
+      font-size: 0.85rem;  
+      border-radius: 4px;  
+      border: 1px solid #bbb;  
+      min-width: 120px;  
+    }  
+    .bottom-buttons {  
+      display: flex;  
+      flex-wrap: wrap;  
+      gap: 8px;  
+      justify-content: space-between;  
+      align-items: center;  
+    }  
+    .bottom-buttons-left,  
+    .bottom-buttons-right {  
+      display: flex;  
+      flex-wrap: wrap;  
+      gap: 8px;  
+    }  
+    .mode-section {  
+      display: flex;  
+      align-items: center;  
+      gap: 10px;  
+      font-size: 0.9rem;  
+    }  
+    .mode-section label {  
+      display: flex;  
+      align-items: center;  
+      gap: 3px;  
+    }  
+    .pipe-table th,  
+    .pipe-table td {  
+      font-size: 0.85rem;  
+    }  
+    .pipe-header-type {  
+      font-weight: 700;  
+      padding-top: 6px;  
+    }  
+    .pipe-count,  
+    .pipe-total {  
+      min-width: 40px;  
+      text-align: center;  
+      border: 1px solid #ccc;  
+      border-radius: 4px;  
+      padding: 2px 4px;  
+      background: #fafafa;  
+    }  
+    .tab-bar {  
+      display: flex;  
+      gap: 6px;  
+      margin-bottom: 10px;  
+      border-bottom: 1px solid #ccc;  
+      padding-bottom: 4px;  
+      flex-wrap: wrap;  
+    }  
+    .tab-btn {  
+      padding: 5px 10px;  
+      border-radius: 6px 6px 0 0;  
+      border: 1px solid #ccc;  
+      border-bottom: none;  
+      background: #eee;  
+      font-size: 0.85rem;  
+      cursor: pointer;  
+    }  
+    .tab-btn.active {  
+      background: white;  
+      border-bottom: 1px solid white;  
+      font-weight: 600;  
+    }  
+    @media (max-width: 700px) {  
+      table {  
+        font-size: 0.8rem;  
+      }  
+      .btn {  
+        padding: 4px 6px;  
+        font-size: 0.75rem;  
+      }  
+      .controls-row {  
+        flex-direction: column;  
+        align-items: flex-start;  
+      }  
+    }  
+  </style>  
+</head>  
+<body>  
+<div id="app">  
+  <h1>Multi-Material Plumbing Takeoff (Copper / CI / PVC / ABS / Black Iron)</h1>  
+  
+  <div id="tab-bar" class="tab-bar"></div>  
+  
+  <div id="pipe-section" class="card"></div>  
+  
+  <div id="mode-section" class="card"></div>  
+  
+  <div id="controls-section" class="card"></div>  
+  
+  <div id="fitting-header" class="card" style="padding-bottom:4px;"></div>  
+  
+  <div id="fittings-list" class="card" style="max-height: 430px; overflow-y: auto;"></div>  
+  
+  <div id="bottom-buttons" class="card"></div>  
+  
+  <input type="file" id="project-file-input" accept="application/json" style="display:none" />  
+</div>  
+  
+<script>  
+(function() {  
+  // ----- MATERIAL DEFINITIONS -----  
+  const MATERIAL_KEYS = ["copper", "castIron", "pvc", "abs", "blackIron"];  
+  
+  const MATERIAL_CONFIGS = {  
+    copper: {  
+      label: "Copper",  
+      pipeTypes: ["Type L", "Type M"],  
+      pipeSizes: ['1/2"', '3/4"', '1"', '1-1/4"', '1-1/2"', '2"', '2-1/2"', '3"'],  
+      stickLength: 20,  
+      hasMode: true,  // WROT / PRESS  
+      groupOrder: [  
+        "Adapters",  
+        "Caps",  
+        "Couplings",  
+        "Elbows 45°",  
+        "Elbows 90°",  
+        "Tees",  
+        "Reducers",  
+        "Custom"  
+      ],  
+      baseCatalog: [  
+        ["Adapters", [  
+          "Adapter C x F – Wrot",  
+          "Fitting Adapter Ftg x F – Wrot",  
+          "Adapter C x M – Wrot",  
+          "Fitting Adapter Ftg x M – Wrot",  
+          "Flush Adapter C x M – Wrot",  
+          "Hose Adapter C x Hose – Cast",  
+          "Fitting Adapter Ftg x M – Cast"  
+        ]],  
+        ["Caps", [  
+          "Tube Cap C – Wrot"  
+        ]],  
+        ["Couplings", [  
+          "Reducing Coupling C x C – Wrot",  
+          "Coupling with Rolled Tube Stop C x C – Wrot",  
+          "Coupling without Stop C x C – Wrot",  
+          "Coupling with Dimpled Tube Stop C x C – Wrot"  
+        ]],  
+        ["Elbows 45°", [  
+          "45° Elbow C x C – Wrot",  
+          "45° Fitting Elbow Ftg x C – Wrot"  
+        ]],  
+        ["Elbows 90°", [  
+          "90° Elbow – Close Rough C x C – Wrot",  
+          "90° Fitting Elbow – Long Radius Ftg x C – Wrot",  
+          "90° Fitting Elbow – Close Rough Ftg x Ftg – Wrot",  
+          "90° Fitting Elbow – Long Radius Ftg x Ftg – Wrot",  
+          "90° Elbow C x F – Cast",  
+          "90° Drop Elbow C x F – Cast",  
+          "90° Hy-Set Elbow C x F – Cast",  
+          "90° Drop Elbow C x C – Cast",  
+          "90° Hy-Set Elbow C x C – Cast"  
+        ]],  
+        ["Tees", [  
+          "Tee C x C x C – Wrot"  
+        ]],  
+        ["Reducers", [  
+          "Fitting Reducer Ftg x C – Wrot"  
+        ]]  
+      ]  
+    },  
+  
+    castIron: {  
+      label: "Cast Iron No-Hub",  
+      pipeTypes: ["No-Hub CI"],  
+      pipeSizes: ['2"', '3"', '4"', '5"', '6"'],  
+      stickLength: 10,  
+      hasMode: false,  
+      groupOrder: [  
+        "Bends",  
+        "Tees",  
+        "Wyes & Combos",  
+        "Traps",  
+        "Cleanouts",  
+        "Specials",  
+        "Custom"  
+      ],  
+      baseCatalog: [  
+        ["Bends", [  
+          "Quarter Bend",  
+          "Long Sweep Quarter Bend",  
+          "Short Sweep Quarter Bend",  
+          "Sixteenth Bend (22-1/2°)",  
+          "Eighth Bend (45°)"  
+        ]],  
+        ["Tees", [  
+          "Sanitary Tee",  
+          "Sanitary Tee with Side Inlet",  
+          "Double Sanitary Tee",  
+          "Tapped Sanitary Tee"  
+        ]],  
+        ["Wyes & Combos", [  
+          "Wye",  
+          "Double Wye",  
+          "Combination Wye & 1/8 Bend",  
+          "Double Combination Wye & 1/8 Bend"  
+        ]],  
+        ["Traps", [  
+          "P-Trap",  
+          "Running Trap",  
+          "Reducing P-Trap"  
+        ]],  
+        ["Cleanouts", [  
+          "Cleanout Tee",  
+          "Cleanout Plug",  
+          "Cleanout with Plug and Ferrule"  
+        ]],  
+        ["Specials", [  
+          "Increaser-Reducer",  
+          "Short Reducer",  
+          "Closet Bend",  
+          "Closet Tee"  
+        ]]  
+      ]  
+    },  
+  
+    pvc: {  
+      label: "PVC DWV",  
+      pipeTypes: ["PVC DWV"],  
+      pipeSizes: ['2"', '3"', '4"', '5"', '6"'],  
+      stickLength: 10,  
+      hasMode: false,  
+      groupOrder: [  
+        "Bends",  
+        "Tees",  
+        "Wyes & Combos",  
+        "Traps",  
+        "Cleanouts",  
+        "Specials",  
+        "Custom"  
+      ],  
+      baseCatalog: [  
+        ["Bends", [  
+          "Quarter Bend",  
+          "Long Sweep Quarter Bend",  
+          "Short Sweep Quarter Bend",  
+          "Sixteenth Bend (22-1/2°)",  
+          "Eighth Bend (45°)"  
+        ]],  
+        ["Tees", [  
+          "Sanitary Tee",  
+          "Sanitary Tee with Side Inlet",  
+          "Double Sanitary Tee",  
+          "Tapped Sanitary Tee"  
+        ]],  
+        ["Wyes & Combos", [  
+          "Wye",  
+          "Double Wye",  
+          "Combination Wye & 1/8 Bend",  
+          "Double Combination Wye & 1/8 Bend"  
+        ]],  
+        ["Traps", [  
+          "P-Trap",  
+          "Running Trap",  
+          "Reducing P-Trap"  
+        ]],  
+        ["Cleanouts", [  
+          "Cleanout Tee",  
+          "Cleanout Plug",  
+          "Cleanout with Plug and Ferrule"  
+        ]],  
+        ["Specials", [  
+          "Increaser-Reducer",  
+          "Short Reducer",  
+          "Closet Bend",  
+          "Closet Tee"  
+        ]]  
+      ]  
+    },  
+  
+    abs: {  
+      label: "ABS DWV",  
+      pipeTypes: ["ABS DWV"],  
+      pipeSizes: ['2"', '3"', '4"', '5"', '6"'],  
+      stickLength: 10,  
+      hasMode: false,  
+      groupOrder: [  
+        "Bends",  
+        "Tees",  
+        "Wyes & Combos",  
+        "Traps",  
+        "Cleanouts",  
+        "Specials",  
+        "Custom"  
+      ],  
+      baseCatalog: [  
+        ["Bends", [  
+          "Quarter Bend",  
+          "Long Sweep Quarter Bend",  
+          "Short Sweep Quarter Bend",  
+          "Sixteenth Bend (22-1/2°)",  
+          "Eighth Bend (45°)"  
+        ]],  
+        ["Tees", [  
+          "Sanitary Tee",  
+          "Sanitary Tee with Side Inlet",  
+          "Double Sanitary Tee",  
+          "Tapped Sanitary Tee"  
+        ]],  
+        ["Wyes & Combos", [  
+          "Wye",  
+          "Double Wye",  
+          "Combination Wye & 1/8 Bend",  
+          "Double Combination Wye & 1/8 Bend"  
+        ]],  
+        ["Traps", [  
+          "P-Trap",  
+          "Running Trap",  
+          "Reducing P-Trap"  
+        ]],  
+        ["Cleanouts", [  
+          "Cleanout Tee",  
+          "Cleanout Plug",  
+          "Cleanout with Plug and Ferrule"  
+        ]],  
+        ["Specials", [  
+          "Increaser-Reducer",  
+          "Short Reducer",  
+          "Closet Bend",  
+          "Closet Tee"  
+        ]]  
+      ]  
+    },  
+  
+    blackIron: {  
+      label: "Black Iron",  
+      pipeTypes: ["Sch 40 Steel"],  
+      pipeSizes: ['1/2"', '3/4"', '1"', '1-1/4"', '1-1/2"', '2"', '2-1/2"', '3"'],  
+      stickLength: 21,  
+      hasMode: true,  // Threaded / Press style  
+      groupOrder: [  
+        "Adapters",  
+        "Caps",  
+        "Couplings",  
+        "Elbows 45°",  
+        "Elbows 90°",  
+        "Tees",  
+        "Reducers",  
+        "Custom"  
+      ],  
+      baseCatalog: [  
+        ["Adapters", [  
+          "Adapter FIP x MIP",  
+          "Adapter FIP x Copper",  
+          "Adapter MIP x Copper"  
+        ]],  
+        ["Caps", [  
+          "Cap FIP",  
+          "Cap MIP"  
+        ]],  
+        ["Couplings", [  
+          "Coupling FIP x FIP",  
+          "Coupling MIP x MIP",  
+          "Union FIP",  
+          "Union MIP"  
+        ]],  
+        ["Elbows 45°", [  
+          "45° Elbow FIP x FIP",  
+          "45° Elbow MIP x MIP"  
+        ]],  
+        ["Elbows 90°", [  
+          "90° Elbow FIP x FIP",  
+          "90° Elbow MIP x MIP",  
+          "Street 90° Elbow MIP x FIP"  
+        ]],  
+        ["Tees", [  
+          "Tee FIP x FIP x FIP",  
+          "Tee MIP x MIP x MIP"  
+        ]],  
+        ["Reducers", [  
+          "Reducer FIP x FIP",  
+          "Reducer MIP x FIP"  
+        ]]  
+      ]  
+    }  
+  };  
+  
+  // ----- PER-MATERIAL STATE -----  
+  const materials = {};  
+  let currentMaterialKey = "copper";  
+  
+  function initMaterialState(key) {  
+    const cfg = MATERIAL_CONFIGS[key];  
+    const mat = {  
+      pipeLengths: {},  
+      pipeCountEls: {},  
+      pipeTotalEls: {},  
+      fittings: [],  
+      fitIdCounter: 1,  
+      mode: cfg.hasMode ? "WROT" : null  
+    };  
+    for (const t of cfg.pipeTypes) {  
+      for (const s of cfg.pipeSizes) {  
+        mat.pipeLengths[`${t}|${s}`] = 0;  
+      }  
+    }  
+    for (const [group, names] of cfg.baseCatalog) {  
+      for (const baseName of names) {  
+        for (const size of cfg.pipeSizes) {  
+          mat.fittings.push({  
+            id: mat.fitIdCounter++,  
+            group,  
+            baseName,  
+            size,  
+            qty: 0  
+          });  
+        }  
+      }  
+    }  
+    materials[key] = mat;  
+  }  
+  
+  for (const key of MATERIAL_KEYS) {  
+    initMaterialState(key);  
+  }  
+  
+  function getCfg() { return MATERIAL_CONFIGS[currentMaterialKey]; }  
+  function getMat() { return materials[currentMaterialKey]; }  
+  
+  function groupKey(group) {  
+    const cfg = getCfg();  
+    const idx = cfg.groupOrder.indexOf(group);  
+    return idx === -1 ? cfg.groupOrder.length : idx;  
+  }  
+  
+  function sortedFittings() {  
+    const mat = getMat();  
+    return mat.fittings.slice().sort((a, b) => {  
+      const gA = groupKey(a.group);  
+      const gB = groupKey(b.group);  
+      if (gA !== gB) return gA - gB;  
+      if (a.baseName < b.baseName) return -1;  
+      if (a.baseName > b.baseName) return 1;  
+      if (a.size < b.size) return -1;  
+      if (a.size > b.size) return 1;  
+      return 0;  
+    });  
+  }  
+  
+  function getDisplayName(fit) {  
+    const cfg = getCfg();  
+    const mat = getMat();  
+    if (!cfg.hasMode || !mat.mode || mat.mode === "WROT") {  
+      return fit.baseName || "";  
+    }  
+    // PRESS mode – pattern-based  
+    let labelBase = (fit.baseName || "")  
+      .replace("– Wrot", "")  
+      .replace("– Cast", "")  
+      .replace("Wrot", "")  
+      .replace("Cast", "")  
+      .trim();  
+    while (labelBase.indexOf("  ") !== -1) {  
+      labelBase = labelBase.replace("  ", " ");  
+    }  
+    if (labelBase.includes("Tee")) {  
+      return "Press Tee (Press x Press x Press)";  
+    }  
+    if (labelBase.includes("45°") && labelBase.includes("Elbow")) {  
+      return "Press 45° Elbow (Press x Press)";  
+    }  
+    if (labelBase.includes("90°") && labelBase.includes("Elbow")) {  
+      return "Press 90° Elbow (Press x Press)";  
+    }  
+    if (labelBase.includes("Coupling") || labelBase.includes("Union")) {  
+      return "Press Coupling (Press x Press)";  
+    }  
+    if (labelBase.includes("Reducer")) {  
+      return "Press Reducer (Press x Press)";  
+    }  
+    if (labelBase.includes("Cap")) {  
+      return "Press Cap (Press End)";  
+    }  
+    if (labelBase.includes("Adapter")) {  
+      return "Press Adapter (Press x Thread/Other)";  
+    }  
+    return "Press " + labelBase;  
+  }  
+  
+  let customNameInput, customSizeInput, existingNameSelect, existingSizeInput;  
+  
+  function buildTabBar() {  
+    const container = document.getElementById("tab-bar");  
+    container.innerHTML = "";  
+    for (const key of MATERIAL_KEYS) {  
+      const btn = document.createElement("button");  
+      btn.className = "tab-btn" + (key === currentMaterialKey ? " active" : "");  
+      btn.textContent = MATERIAL_CONFIGS[key].label;  
+      btn.addEventListener("click", () => {  
+        if (currentMaterialKey !== key) {  
+          currentMaterialKey = key;  
+          renderAll();  
+        }  
+      });  
+      container.appendChild(btn);  
+    }  
+  }  
+  
+  function buildPipeSection() {  
+    const cfg = getCfg();  
+    const mat = getMat();  
+    const container = document.getElementById("pipe-section");  
+    container.innerHTML = "";  
+    const title = document.createElement("h2");  
+    if (currentMaterialKey === "copper") {  
+      title.textContent = "Copper Pipe (20' Sticks)";  
+    } else if (currentMaterialKey === "castIron") {  
+      title.textContent = "Cast Iron No-Hub Pipe (10' Sticks)";  
+    } else if (currentMaterialKey === "pvc") {  
+      title.textContent = "PVC DWV Pipe (10' Sticks)";  
+    } else if (currentMaterialKey === "abs") {  
+      title.textContent = "ABS DWV Pipe (10' Sticks)";  
+    } else if (currentMaterialKey === "blackIron") {  
+      title.textContent = "Black Iron Pipe (21' Sticks)";  
+    } else {  
+      title.textContent = "Pipe";  
+    }  
+    container.appendChild(title);  
+  
+    const table = document.createElement("table");  
+    table.className = "pipe-table";  
+    const thead = document.createElement("thead");  
+    const lengthLabel = `${cfg.stickLength}' Lengths`;  
+    thead.innerHTML = `  
+      <tr>  
+        <th>Type</th>  
+        <th>Size</th>  
+        <th>${lengthLabel}</th>  
+        <th>Total Ft</th>  
+        <th>Actions</th>  
+      </tr>  
+    `;  
+    table.appendChild(thead);  
+  
+    const tbody = document.createElement("tbody");  
+    mat.pipeCountEls = {};  
+    mat.pipeTotalEls = {};  
+  
+    for (const type of cfg.pipeTypes) {  
+      const typeRow = document.createElement("tr");  
+      const th = document.createElement("th");  
+      th.colSpan = 5;  
+      th.className = "pipe-header-type";  
+      th.textContent = type;  
+      typeRow.appendChild(th);  
+      tbody.appendChild(typeRow);  
+  
+      for (const size of cfg.pipeSizes) {  
+        const key = `${type}|${size}`;  
+        const tr = document.createElement("tr");  
+  
+        const tdType = document.createElement("td");  
+        tdType.textContent = "";  
+        tr.appendChild(tdType);  
+  
+        const tdSize = document.createElement("td");  
+        tdSize.textContent = size;  
+        tr.appendChild(tdSize);  
+  
+        const tdCount = document.createElement("td");  
+        const countSpan = document.createElement("span");  
+        countSpan.className = "pipe-count";  
+        countSpan.textContent = "0";  
+        tdCount.appendChild(countSpan);  
+        mat.pipeCountEls[key] = countSpan;  
+        tr.appendChild(tdCount);  
+  
+        const tdTotal = document.createElement("td");  
+        const totalSpan = document.createElement("span");  
+        totalSpan.className = "pipe-total";  
+        totalSpan.textContent = "0";  
+        tdTotal.appendChild(totalSpan);  
+        mat.pipeTotalEls[key] = totalSpan;  
+        tr.appendChild(tdTotal);  
+  
+        const tdActions = document.createElement("td");  
+        const btnPlus = document.createElement("button");  
+        btnPlus.className = "btn";  
+        btnPlus.textContent = "+1";  
+        btnPlus.addEventListener("click", () => changePipeSticks(type, size, 1));  
+  
+        const btnMinus = document.createElement("button");  
+        btnMinus.className = "btn";  
+        btnMinus.textContent = "-1";  
+        btnMinus.addEventListener("click", () => changePipeSticks(type, size, -1));  
+  
+        const btnClear = document.createElement("button");  
+        btnClear.className = "btn";  
+        btnClear.textContent = "C";  
+        btnClear.addEventListener("click", () => clearPipeSticks(type, size));  
+  
+        tdActions.appendChild(btnPlus);  
+        tdActions.appendChild(document.createTextNode(" "));  
+        tdActions.appendChild(btnMinus);  
+        tdActions.appendChild(document.createTextNode(" "));  
+        tdActions.appendChild(btnClear);  
+        tr.appendChild(tdActions);  
+  
+        tbody.appendChild(tr);  
+      }  
+    }  
+  
+    table.appendChild(tbody);  
+    container.appendChild(table);  
+  }  
+  
+  function buildModeSection() {  
+    const cfg = getCfg();  
+    const mat = getMat();  
+    const container = document.getElementById("mode-section");  
+    container.innerHTML = "";  
+    if (!cfg.hasMode) {  
+      const span = document.createElement("span");  
+      span.textContent = `Fitting System: N/A (${cfg.label})`;  
+      container.appendChild(span);  
+      return;  
+    }  
+  
+    const wrap = document.createElement("div");  
+    wrap.className = "mode-section";  
+    const label = document.createElement("span");  
+    label.textContent = "Fitting System:";  
+    wrap.appendChild(label);  
+  
+    const isCopper = currentMaterialKey === "copper";  
+    const wrotLabelText = isCopper ? "WROT (Sweat)" : "THREADED";  
+    const pressLabelText = "PRESS";  
+  
+    const wrotLabel = document.createElement("label");  
+    const wrotRadio = document.createElement("input");  
+    wrotRadio.type = "radio";  
+    wrotRadio.name = "mode";  
+    wrotRadio.value = "WROT";  
+    if (mat.mode === "WROT") wrotRadio.checked = true;  
+    wrotRadio.addEventListener("change", () => {  
+      if (wrotRadio.checked) {  
+        mat.mode = "WROT";  
+        renderFittingsList();  
+      }  
+    });  
+    wrotLabel.appendChild(wrotRadio);  
+    wrotLabel.appendChild(document.createTextNode(wrotLabelText));  
+    wrap.appendChild(wrotLabel);  
+  
+    const pressLabel = document.createElement("label");  
+    const pressRadio = document.createElement("input");  
+    pressRadio.type = "radio";  
+    pressRadio.name = "mode";  
+    pressRadio.value = "PRESS";  
+    if (mat.mode === "PRESS") pressRadio.checked = true;  
+    pressRadio.addEventListener("change", () => {  
+      if (pressRadio.checked) {  
+        mat.mode = "PRESS";  
+        renderFittingsList();  
+      }  
+    });  
+    pressLabel.appendChild(pressRadio);  
+    pressLabel.appendChild(document.createTextNode(pressLabelText));  
+    wrap.appendChild(pressLabel);  
+  
+    container.appendChild(wrap);  
+  }  
+  
+  function buildControlsSection() {  
+    const cfg = getCfg();  
+    const container = document.getElementById("controls-section");  
+    container.innerHTML = "";  
+  
+    const title = document.createElement("h2");  
+    title.textContent = `Add / Customize Fittings (${cfg.label})`;  
+    container.appendChild(title);  
+  
+    const row1 = document.createElement("div");  
+    row1.className = "controls-row";  
+  
+    const label1 = document.createElement("label");  
+    label1.textContent = "Custom fitting name (base):";  
+    row1.appendChild(label1);  
+  
+    customNameInput = document.createElement("input");  
+    customNameInput.type = "text";  
+    customNameInput.placeholder =  
+      currentMaterialKey === "copper"  
+        ? "e.g. Floor Cleanout Body C x F"  
+        : currentMaterialKey === "blackIron"  
+        ? "e.g. Union with Drain"  
+        : "e.g. Backwater Valve";  
+    row1.appendChild(customNameInput);  
+  
+    const labelSize1 = document.createElement("label");  
+    labelSize1.textContent = "Size:";  
+    row1.appendChild(labelSize1);  
+  
+    customSizeInput = document.createElement("input");  
+    customSizeInput.type = "text";  
+    customSizeInput.placeholder =  
+      currentMaterialKey === "copper"  
+        ? 'e.g. 2" or 3x2x1-1/2"'  
+        : currentMaterialKey === "blackIron"  
+        ? 'e.g. 2" or 3x2"'  
+        : 'e.g. 4" or 6x4"';  
+    row1.appendChild(customSizeInput);  
+  
+    const btnAddCustom = document.createElement("button");  
+    btnAddCustom.className = "btn btn-primary";  
+    btnAddCustom.textContent = "Add Custom (Group: Custom)";  
+    btnAddCustom.addEventListener("click", addCustomFitting);  
+    row1.appendChild(btnAddCustom);  
+  
+    container.appendChild(row1);  
+  
+    const row2 = document.createElement("div");  
+    row2.className = "controls-row";  
+  
+    const label2 = document.createElement("label");  
+    label2.textContent = "Existing fitting (base name):";  
+    row2.appendChild(label2);  
+  
+    existingNameSelect = document.createElement("select");  
+    refreshExistingNameOptions();  
+    row2.appendChild(existingNameSelect);  
+  
+    const labelSize2 = document.createElement("label");  
+    labelSize2.textContent = "Size (incl. reducing / tees):";  
+    row2.appendChild(labelSize2);  
+  
+    existingSizeInput = document.createElement("input");  
+    existingSizeInput.type = "text";  
+    existingSizeInput.placeholder =  
+      currentMaterialKey === "copper"  
+        ? 'e.g. 2x1" or 3x2x1-1/2"'  
+        : 'e.g. 6x4" or 4x3x2"';  
+    row2.appendChild(existingSizeInput);  
+  
+    const btnAddSize = document.createElement("button");  
+    btnAddSize.className = "btn btn-primary";  
+    btnAddSize.textContent = "Add Size for Existing Fitting";  
+    btnAddSize.addEventListener("click", addSizeForExisting);  
+    row2.appendChild(btnAddSize);  
+  
+    container.appendChild(row2);  
+  }  
+  
+  function refreshExistingNameOptions() {  
+    if (!existingNameSelect) return;  
+    const names = getAllBaseNames();  
+    existingNameSelect.innerHTML = "";  
+    for (const n of names) {  
+      const opt = document.createElement("option");  
+      opt.value = n;  
+      opt.textContent = n;  
+      existingNameSelect.appendChild(opt);  
+    }  
+  }  
+  
+  function getAllBaseNames() {  
+    const mat = getMat();  
+    const set = new Set();  
+    for (const f of mat.fittings) {  
+      if (f.baseName && f.baseName.trim()) set.add(f.baseName.trim());  
+    }  
+    return Array.from(set).sort();  
+  }  
+  
+  function buildFittingHeader() {  
+    const container = document.getElementById("fitting-header");  
+    container.innerHTML = "";  
+    const table = document.createElement("table");  
+    const thead = document.createElement("thead");  
+    thead.innerHTML = `  
+      <tr>  
+        <th style="width:58%">Fitting Name</th>  
+        <th style="width:14%">Size</th>  
+        <th style="width:8%">Qty</th>  
+        <th style="width:20%">Actions</th>  
+      </tr>  
+    `;  
+    table.appendChild(thead);  
+    container.appendChild(table);  
+  }  
+  
+  function buildBottomButtons() {  
+    const container = document.getElementById("bottom-buttons");  
+    container.innerHTML = "";  
+  
+    const wrap = document.createElement("div");  
+    wrap.className = "bottom-buttons";  
+  
+    const left = document.createElement("div");  
+    left.className = "bottom-buttons-left";  
+  
+    const btnReset = document.createElement("button");  
+    btnReset.className = "btn btn-danger";  
+    btnReset.textContent = "Reset All (This Tab Only)";  
+    btnReset.addEventListener("click", resetAll);  
+    left.appendChild(btnReset);  
+  
+    const btnCsvTab = document.createElement("button");  
+    btnCsvTab.className = "btn";  
+    btnCsvTab.textContent = "Export CSV (This Tab)";  
+    btnCsvTab.addEventListener("click", exportCSV_ThisTab);  
+    left.appendChild(btnCsvTab);  
+  
+    const btnTxtTab = document.createElement("button");  
+    btnTxtTab.className = "btn";  
+    btnTxtTab.textContent = "Export Text (This Tab)";  
+    btnTxtTab.addEventListener("click", exportText_ThisTab);  
+    left.appendChild(btnTxtTab);  
+  
+    const btnCopyTab = document.createElement("button");  
+    btnCopyTab.className = "btn";  
+    btnCopyTab.textContent = "Copy Summary (This Tab)";  
+    btnCopyTab.addEventListener("click", copySummary_ThisTab);  
+    left.appendChild(btnCopyTab);  
+  
+    const btnCsvAll = document.createElement("button");  
+    btnCsvAll.className = "btn";  
+    btnCsvAll.textContent = "Export CSV (All Tabs)";  
+    btnCsvAll.addEventListener("click", exportCSV_AllMaterials);  
+    left.appendChild(btnCsvAll);  
+  
+    const btnTxtAll = document.createElement("button");  
+    btnTxtAll.className = "btn";  
+    btnTxtAll.textContent = "Export Text (All Tabs)";  
+    btnTxtAll.addEventListener("click", exportText_AllMaterials);  
+    left.appendChild(btnTxtAll);  
+  
+    const btnCopyAll = document.createElement("button");  
+    btnCopyAll.className = "btn";  
+    btnCopyAll.textContent = "Copy Summary (All Tabs)";  
+    btnCopyAll.addEventListener("click", copySummary_AllMaterials);  
+    left.appendChild(btnCopyAll);  
+  
+    const right = document.createElement("div");  
+    right.className = "bottom-buttons-right";  
+  
+    const btnOpen = document.createElement("button");  
+    btnOpen.className = "btn";  
+    btnOpen.textContent = "Open Project";  
+    btnOpen.addEventListener("click", openProject);  
+    right.appendChild(btnOpen);  
+  
+    const btnSave = document.createElement("button");  
+    btnSave.className = "btn btn-primary";  
+    btnSave.textContent = "Save Project";  
+    btnSave.addEventListener("click", saveProject);  
+    right.appendChild(btnSave);  
+  
+    wrap.appendChild(left);  
+    wrap.appendChild(right);  
+    container.appendChild(wrap);  
+  }  
+  
+  // ----- PIPE HELPERS -----  
+  function changePipeSticks(type, size, delta) {  
+    const cfg = getCfg();  
+    const mat = getMat();  
+    const key = `${type}|${size}`;  
+    if (!(key in mat.pipeLengths)) return;  
+    const newVal = Math.max(0, mat.pipeLengths[key] + delta);  
+    mat.pipeLengths[key] = newVal;  
+    refreshPipeDisplay(type, size);  
+  }  
+  
+  function clearPipeSticks(type, size) {  
+    const mat = getMat();  
+    const key = `${type}|${size}`;  
+    if (!(key in mat.pipeLengths)) return;  
+    mat.pipeLengths[key] = 0;  
+    refreshPipeDisplay(type, size);  
+  }  
+  
+  function refreshPipeDisplay(type, size) {  
+    const cfg = getCfg();  
+    const mat = getMat();  
+    const key = `${type}|${size}`;  
+    const count = mat.pipeLengths[key] || 0;  
+    const totalFt = count * cfg.stickLength;  
+    if (mat.pipeCountEls[key]) mat.pipeCountEls[key].textContent = String(count);  
+    if (mat.pipeTotalEls[key]) mat.pipeTotalEls[key].textContent = String(totalFt);  
+  }  
+  
+  function refreshPipeDisplayAll() {  
+    const cfg = getCfg();  
+    const mat = getMat();  
+    for (const t of cfg.pipeTypes) {  
+      for (const s of cfg.pipeSizes) {  
+        refreshPipeDisplay(t, s);  
+      }  
+    }  
+  }  
+  
+  // ----- FITTING HELPERS -----  
+  function addCustomFitting() {  
+    const mat = getMat();  
+    const name = (customNameInput.value || "").trim();  
+    const size = (customSizeInput.value || "").trim();  
+    if (!name) {  
+      alert("Please enter a fitting name.");  
+      return;  
+    }  
+    mat.fittings.push({  
+      id: mat.fitIdCounter++,  
+      group: "Custom",  
+      baseName: name,  
+      size,  
+      qty: 0  
+    });  
+    customNameInput.value = "";  
+    customSizeInput.value = "";  
+    refreshExistingNameOptions();  
+    renderFittingsList();  
+  }  
+  
+  function addSizeForExisting() {  
+    const mat = getMat();  
+    const baseName = existingNameSelect.value;  
+    const size = (existingSizeInput.value || "").trim();  
+    if (!baseName) {  
+      alert("Select an existing fitting first.");  
+      return;  
+    }  
+    if (!size) {  
+      alert("Enter a size, e.g. 2x1\" or 3x2x1-1/2\".");  
+      return;  
+    }  
+    let group = "Custom";  
+    for (const f of mat.fittings) {  
+      if (f.baseName === baseName) {  
+        group = f.group;  
+        break;  
+      }  
+    }  
+    mat.fittings.push({  
+      id: mat.fitIdCounter++,  
+      group,  
+      baseName,  
+      size,  
+      qty: 0  
+    });  
+    existingSizeInput.value = "";  
+    renderFittingsList();  
+  }  
+  
+  function renderFittingsList() {  
+    const container = document.getElementById("fittings-list");  
+    container.innerHTML = "";  
+    const mat = getMat();  
+  
+    const table = document.createElement("table");  
+    const tbody = document.createElement("tbody");  
+  
+    let currentGroup = null;  
+    const sorted = sortedFittings();  
+  
+    for (const fit of sorted) {  
+      if (fit.group !== currentGroup) {  
+        currentGroup = fit.group;  
+        const groupTr = document.createElement("tr");  
+        groupTr.className = "group-row";  
+        const th = document.createElement("th");  
+        th.colSpan = 4;  
+        th.textContent = `=== ${currentGroup} ===`;  
+        groupTr.appendChild(th);  
+        tbody.appendChild(groupTr);  
+      }  
+  
+      const tr = document.createElement("tr");  
+      const tdName = document.createElement("td");  
+      tdName.textContent = getDisplayName(fit);  
+      tr.appendChild(tdName);  
+  
+      const tdSize = document.createElement("td");  
+      tdSize.textContent = fit.size;  
+      tr.appendChild(tdSize);  
+  
+      const tdQty = document.createElement("td");  
+      tdQty.className = "qty-cell";  
+      tdQty.textContent = String(fit.qty);  
+      tr.appendChild(tdQty);  
+  
+      const tdActions = document.createElement("td");  
+      const btnPlus = document.createElement("button");  
+      btnPlus.className = "btn";  
+      btnPlus.textContent = "+1";  
+      btnPlus.addEventListener("click", () => {  
+        fit.qty = Math.max(0, fit.qty + 1);  
+        tdQty.textContent = String(fit.qty);  
+      });  
+  
+      const btnMinus = document.createElement("button");  
+      btnMinus.className = "btn";  
+      btnMinus.textContent = "-1";  
+      btnMinus.addEventListener("click", () => {  
+        fit.qty = Math.max(0, fit.qty - 1);  
+        tdQty.textContent = String(fit.qty);  
+      });  
+  
+      const btnDel = document.createElement("button");  
+      btnDel.className = "btn";  
+      btnDel.textContent = "X";  
+      btnDel.addEventListener("click", () => {  
+        const index = mat.fittings.findIndex(f => f.id === fit.id);  
+        if (index !== -1) {  
+          mat.fittings.splice(index, 1);  
+          refreshExistingNameOptions();  
+          renderFittingsList();  
+        }  
+      });  
+  
+      tdActions.appendChild(btnPlus);  
+      tdActions.appendChild(document.createTextNode(" "));  
+      tdActions.appendChild(btnMinus);  
+      tdActions.appendChild(document.createTextNode(" "));  
+      tdActions.appendChild(btnDel);  
+      tr.appendChild(tdActions);  
+  
+      tbody.appendChild(tr);  
+    }  
+  
+    table.appendChild(tbody);  
+    container.appendChild(table);  
+  }  
+  
+  function resetAll() {  
+    const cfg = getCfg();  
+    const mat = getMat();  
+    for (const f of mat.fittings) {  
+      f.qty = 0;  
+    }  
+    renderFittingsList();  
+    for (const t of cfg.pipeTypes) {  
+      for (const s of cfg.pipeSizes) {  
+        mat.pipeLengths[`${t}|${s}`] = 0;  
+      }  
+    }  
+    refreshPipeDisplayAll();  
+  }  
+  
+  function nonzeroFittingsSortedForMat(key) {  
+    const saved = currentMaterialKey;  
+    currentMaterialKey = key;  
+    const list = sortedFittings().filter(f => f.qty > 0);  
+    currentMaterialKey = saved;  
+    return list;  
+  }  
+  
+  function nonzeroPipeForMat(key) {  
+    const cfg = MATERIAL_CONFIGS[key];  
+    const mat = materials[key];  
+    const out = [];  
+    for (const t of cfg.pipeTypes) {  
+      for (const s of cfg.pipeSizes) {  
+        const k = `${t}|${s}`;  
+        const count = mat.pipeLengths[k] || 0;  
+        if (count > 0) {  
+          out.push({  
+            type: t,  
+            size: s,  
+            count,  
+            totalFt: count * cfg.stickLength  
+          });  
+        }  
+      }  
+    }  
+    return out;  
+  }  
+  
+  // ----- SINGLE-TAB EXPORTS -----  
+  function exportCSV_ThisTab() {  
+    const key = currentMaterialKey;  
+    const cfg = MATERIAL_CONFIGS[key];  
+    const mat = materials[key];  
+    const nzPipe = nonzeroPipeForMat(key);  
+    const nzFit = nonzeroFittingsSortedForMat(key);  
+    if (nzPipe.length === 0 && nzFit.length === 0) {  
+      alert("Nothing to export for this tab (all quantities are zero).");  
+      return;  
+    }  
+    const rows = [];  
+    const modeLabel = cfg.hasMode ? ` (${mat.mode || "WROT"})` : "";  
+    const materialLabel = cfg.label + modeLabel;  
+    rows.push(["Material", "Group", "Item Name", "Size", "Quantity / Ft"]);  
+  
+    for (const p of nzPipe) {  
+      let itemName;  
+      if (key === "copper") {  
+        itemName = `Copper Pipe ${p.type}`;  
+      } else if (key === "castIron") {  
+        itemName = "Cast Iron No-Hub Pipe";  
+      } else if (key === "pvc") {  
+        itemName = "PVC DWV Pipe";  
+      } else if (key === "abs") {  
+        itemName = "ABS DWV Pipe";  
+      } else if (key === "blackIron") {  
+        itemName = `Black Iron Pipe ${p.type}`;  
+      } else {  
+        itemName = "Pipe";  
+      }  
+      rows.push([materialLabel, "Pipe", itemName, p.size, String(p.totalFt)]);  
+    }  
+  
+    for (const f of nzFit) {  
+      const name = getDisplayName(f);  
+      rows.push([materialLabel, f.group, name, f.size, String(f.qty)]);  
+    }  
+  
+    const csv = rows  
+      .map(r => r.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))  
+      .join("\r\n");  
+    const safeName = cfg.label.replace(/\s+/g, "_").toLowerCase();  
+    downloadTextFile(csv, `takeoff_${safeName}.csv`, "text/csv");  
+  }  
+  
+  function exportText_ThisTab() {  
+    const key = currentMaterialKey;  
+    const cfg = MATERIAL_CONFIGS[key];  
+    const mat = materials[key];  
+    const nzPipe = nonzeroPipeForMat(key);  
+    const nzFit = nonzeroFittingsSortedForMat(key);  
+    if (nzPipe.length === 0 && nzFit.length === 0) {  
+      alert("Nothing to export for this tab (all quantities are zero).");  
+      return;  
+    }  
+  
+    const lines = [];  
+    const modeLabel = cfg.hasMode ? ` (${mat.mode || "WROT"})` : "";  
+    lines.push(`Material Takeoff Summary – ${cfg.label}${modeLabel}`);  
+    lines.push("=".repeat(60));  
+  
+    if (nzPipe.length > 0) {  
+      lines.push("");  
+      lines.push("- Pipe -");  
+      for (const p of nzPipe) {  
+        let matLabel;  
+        if (key === "copper") {  
+          matLabel = `Copper Pipe ${p.type}`;  
+        } else if (key === "castIron") {  
+          matLabel = "Cast Iron No-Hub Pipe";  
+        } else if (key === "pvc") {  
+          matLabel = "PVC DWV Pipe";  
+        } else if (key === "abs") {  
+          matLabel = "ABS DWV Pipe";  
+        } else if (key === "blackIron") {  
+          matLabel = `Black Iron Pipe ${p.type}`;  
+        } else {  
+          matLabel = "Pipe";  
+        }  
+        lines.push(`${p.totalFt} ft  (${cfg.stickLength}' x ${p.count})  ${p.size} ${matLabel}`);  
+      }  
+    }  
+  
+    if (nzFit.length > 0) {  
+      let currentGroup = null;  
+      for (const f of nzFit) {  
+        if (f.group !== currentGroup) {  
+          currentGroup = f.group;  
+          lines.push("");  
+          lines.push(`- ${currentGroup} -`);  
+        }  
+        const name = getDisplayName(f);  
+        lines.push(`${f.qty}x  ${f.size}  ${name}`);  
+      }  
+    }  
+  
+    const txt = lines.join("\n");  
+    const safeName = cfg.label.replace(/\s+/g, "_").toLowerCase();  
+    downloadTextFile(txt, `takeoff_${safeName}.txt`, "text/plain");  
+  }  
+  
+  function copySummary_ThisTab() {  
+    const key = currentMaterialKey;  
+    const cfg = MATERIAL_CONFIGS[key];  
+    const mat = materials[key];  
+    const nzPipe = nonzeroPipeForMat(key);  
+    const nzFit = nonzeroFittingsSortedForMat(key);  
+    if (nzPipe.length === 0 && nzFit.length === 0) {  
+      alert("Nothing to copy for this tab (all quantities are zero).");  
+      return;  
+    }  
+  
+    const lines = [];  
+    const modeLabel = cfg.hasMode ? ` (${mat.mode || "WROT"})` : "";  
+    lines.push(`Material Takeoff Summary – ${cfg.label}${modeLabel}`);  
+    lines.push("=".repeat(60));  
+  
+    if (nzPipe.length > 0) {  
+      lines.push("");  
+      lines.push("- Pipe -");  
+      for (const p of nzPipe) {  
+        let matLabel;  
+        if (key === "copper") {  
+          matLabel = `Copper Pipe ${p.type}`;  
+        } else if (key === "castIron") {  
+          matLabel = "Cast Iron No-Hub Pipe";  
+        } else if (key === "pvc") {  
+          matLabel = "PVC DWV Pipe";  
+        } else if (key === "abs") {  
+          matLabel = "ABS DWV Pipe";  
+        } else if (key === "blackIron") {  
+          matLabel = `Black Iron Pipe ${p.type}`;  
+        } else {  
+          matLabel = "Pipe";  
+        }  
+        lines.push(`${p.totalFt} ft  (${cfg.stickLength}' x ${p.count})  ${p.size} ${matLabel}`);  
+      }  
+    }  
+  
+    if (nzFit.length > 0) {  
+      let currentGroup = null;  
+      for (const f of nzFit) {  
+        if (f.group !== currentGroup) {  
+          currentGroup = f.group;  
+          lines.push("");  
+          lines.push(`- ${currentGroup} -`);  
+        }  
+        const name = getDisplayName(f);  
+        lines.push(`${f.qty}x  ${f.size}  ${name}`);  
+      }  
+    }  
+  
+    const txt = lines.join("\n");  
+    if (navigator.clipboard && navigator.clipboard.writeText) {  
+      navigator.clipboard.writeText(txt)  
+        .then(() => alert("This-tab summary copied to clipboard."))  
+        .catch(() => fallbackCopy(txt));  
+    } else {  
+      fallbackCopy(txt);  
+    }  
+  }  
+  
+  // ----- ALL-MATERIAL EXPORTS -----  
+  function exportCSV_AllMaterials() {  
+    let any = false;  
+    const rows = [["Material", "Group", "Item Name", "Size", "Quantity / Ft"]];  
+    for (const key of MATERIAL_KEYS) {  
+      const cfg = MATERIAL_CONFIGS[key];  
+      const mat = materials[key];  
+      const nzPipe = nonzeroPipeForMat(key);  
+      const nzFit = nonzeroFittingsSortedForMat(key);  
+      if (nzPipe.length === 0 && nzFit.length === 0) continue;  
+      any = true;  
+      for (const p of nzPipe) {  
+        let itemName;  
+        if (key === "copper") {  
+          itemName = `Copper Pipe ${p.type}`;  
+        } else if (key === "castIron") {  
+          itemName = "Cast Iron No-Hub Pipe";  
+        } else if (key === "pvc") {  
+          itemName = "PVC DWV Pipe";  
+        } else if (key === "abs") {  
+          itemName = "ABS DWV Pipe";  
+        } else if (key === "blackIron") {  
+          itemName = `Black Iron Pipe ${p.type}`;  
+        } else {  
+          itemName = "Pipe";  
+        }  
+        rows.push([cfg.label, "Pipe", itemName, p.size, String(p.totalFt)]);  
+      }  
+      for (const f of nzFit) {  
+        const saved = currentMaterialKey;  
+        currentMaterialKey = key;  
+        const name = getDisplayName(f);  
+        currentMaterialKey = saved;  
+        rows.push([cfg.label, f.group, name, f.size, String(f.qty)]);  
+      }  
+    }  
+    if (!any) {  
+      alert("Nothing to export (all quantities are zero).");  
+      return;  
+    }  
+    const csv = rows  
+      .map(r => r.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))  
+      .join("\r\n");  
+    downloadTextFile(csv, "multi_material_takeoff.csv", "text/csv");  
+  }  
+  
+  function exportText_AllMaterials() {  
+    let any = false;  
+    const lines = [];  
+    lines.push("Multi-Material Plumbing Takeoff Summary");  
+    lines.push("=".repeat(60));  
+  
+    for (const key of MATERIAL_KEYS) {  
+      const cfg = MATERIAL_CONFIGS[key];  
+      const mat = materials[key];  
+      const nzPipe = nonzeroPipeForMat(key);  
+      const nzFit = nonzeroFittingsSortedForMat(key);  
+      if (nzPipe.length === 0 && nzFit.length === 0) continue;  
+      any = true;  
+      lines.push("");  
+      const modeLabel = cfg.hasMode ? ` (${mat.mode || "WROT"})` : "";  
+      lines.push(`[${cfg.label}${modeLabel}]`);  
+  
+      if (nzPipe.length > 0) {  
+        lines.push("");  
+        lines.push("- Pipe -");  
+        for (const p of nzPipe) {  
+          let matLabel;  
+          if (key === "copper") {  
+            matLabel = `Copper Pipe ${p.type}`;  
+          } else if (key === "castIron") {  
+            matLabel = "Cast Iron No-Hub Pipe";  
+          } else if (key === "pvc") {  
+            matLabel = "PVC DWV Pipe";  
+          } else if (key === "abs") {  
+            matLabel = "ABS DWV Pipe";  
+          } else if (key === "blackIron") {  
+            matLabel = `Black Iron Pipe ${p.type}`;  
+          } else {  
+            matLabel = "Pipe";  
+          }  
+          lines.push(`${p.totalFt} ft  (${cfg.stickLength}' x ${p.count})  ${p.size} ${matLabel}`);  
+        }  
+      }  
+  
+      if (nzFit.length > 0) {  
+        let currentGroup = null;  
+        for (const f of nzFit) {  
+          if (f.group !== currentGroup) {  
+            currentGroup = f.group;  
+            lines.push("");  
+            lines.push(`- ${currentGroup} -`);  
+          }  
+          const saved = currentMaterialKey;  
+          currentMaterialKey = key;  
+          const name = getDisplayName(f);  
+          currentMaterialKey = saved;  
+          lines.push(`${f.qty}x  ${f.size}  ${name}`);  
+        }  
+      }  
+    }  
+  
+    if (!any) {  
+      alert("Nothing to export (all quantities are zero).");  
+      return;  
+    }  
+  
+    const txt = lines.join("\n");  
+    downloadTextFile(txt, "multi_material_takeoff.txt", "text/plain");  
+  }  
+  
+  function copySummary_AllMaterials() {  
+    let any = false;  
+    const lines = [];  
+    lines.push("Multi-Material Plumbing Takeoff Summary");  
+    lines.push("=".repeat(60));  
+  
+    for (const key of MATERIAL_KEYS) {  
+      const cfg = MATERIAL_CONFIGS[key];  
+      const mat = materials[key];  
+      const nzPipe = nonzeroPipeForMat(key);  
+      const nzFit = nonzeroFittingsSortedForMat(key);  
+      if (nzPipe.length === 0 && nzFit.length === 0) continue;  
+      any = true;  
+      lines.push("");  
+      const modeLabel = cfg.hasMode ? ` (${mat.mode || "WROT"})` : "";  
+      lines.push(`[${cfg.label}${modeLabel}]`);  
+  
+      if (nzPipe.length > 0) {  
+        lines.push("");  
+        lines.push("- Pipe -");  
+        for (const p of nzPipe) {  
+          let matLabel;  
+          if (key === "copper") {  
+            matLabel = `Copper Pipe ${p.type}`;  
+          } else if (key === "castIron") {  
+            matLabel = "Cast Iron No-Hub Pipe";  
+          } else if (key === "pvc") {  
+            matLabel = "PVC DWV Pipe";  
+          } else if (key === "abs") {  
+            matLabel = "ABS DWV Pipe";  
+          } else if (key === "blackIron") {  
+            matLabel = `Black Iron Pipe ${p.type}`;  
+          } else {  
+            matLabel = "Pipe";  
+          }  
+          lines.push(`${p.totalFt} ft  (${cfg.stickLength}' x ${p.count})  ${p.size} ${matLabel}`);  
+        }  
+      }  
+  
+      if (nzFit.length > 0) {  
+        let currentGroup = null;  
+        for (const f of nzFit) {  
+          if (f.group !== currentGroup) {  
+            currentGroup = f.group;  
+            lines.push("");  
+            lines.push(`- ${currentGroup} -`);  
+          }  
+          const saved = currentMaterialKey;  
+          currentMaterialKey = key;  
+          const name = getDisplayName(f);  
+          currentMaterialKey = saved;  
+          lines.push(`${f.qty}x  ${f.size}  ${name}`);  
+        }  
+      }  
+    }  
+  
+    if (!any) {  
+      alert("Nothing to copy (all quantities are zero).");  
+      return;  
+    }  
+  
+    const txt = lines.join("\n");  
+    if (navigator.clipboard && navigator.clipboard.writeText) {  
+      navigator.clipboard.writeText(txt)  
+        .then(() => alert("All-tabs summary copied to clipboard."))  
+        .catch(() => fallbackCopy(txt));  
+    } else {  
+      fallbackCopy(txt);  
+    }  
+  }  
+  
+  function fallbackCopy(text) {  
+    const ta = document.createElement("textarea");  
+    ta.value = text;  
+    ta.style.position = "fixed";  
+    ta.style.opacity = "0";  
+    document.body.appendChild(ta);  
+    ta.select();  
+    try { document.execCommand("copy"); } catch(e) {}  
+    document.body.removeChild(ta);  
+    alert("Summary copied to clipboard.");  
+  }  
+  
+  function downloadTextFile(text, filename, mime) {  
+    const blob = new Blob([text], {type: mime});  
+    const url = URL.createObjectURL(blob);  
+    const a = document.createElement("a");  
+    a.href = url;  
+    a.download = filename;  
+    document.body.appendChild(a);  
+    a.click();  
+    document.body.removeChild(a);  
+    URL.revokeObjectURL(url);  
+  }  
+  
+  // ----- SAVE / OPEN PROJECT -----  
+  function saveProject() {  
+    const data = {  
+      materials,  
+      currentMaterialKey  
+    };  
+    const json = JSON.stringify(data, null, 2);  
+    downloadTextFile(json, "multi_material_takeoff_project.json", "application/json");  
+  }  
+  
+  function openProject() {  
+    const input = document.getElementById("project-file-input");  
+    input.value = "";  
+    input.onchange = function() {  
+      if (!input.files || !input.files[0]) return;  
+      const file = input.files[0];  
+      const reader = new FileReader();  
+      reader.onload = function(e) {  
+        try {  
+          const data = JSON.parse(e.target.result);  
+          loadProjectData(data);  
+        } catch (err) {  
+          console.error(err);  
+          alert("Failed to read project file.");  
+        }  
+      };  
+      reader.readAsText(file);  
+    };  
+    input.click();  
+  }  
+  
+  function loadProjectData(data) {  
+    if (!data || typeof data !== "object" || !data.materials) {  
+      alert("Invalid project format.");  
+      return;  
+    }  
+    for (const key of MATERIAL_KEYS) {  
+      const cfg = MATERIAL_CONFIGS[key];  
+      if (!data.materials[key]) continue;  
+      const mIn = data.materials[key];  
+  
+      const mOut = {  
+        pipeLengths: {},  
+        pipeCountEls: {},  
+        pipeTotalEls: {},  
+        fittings: [],  
+        fitIdCounter: 1,  
+        mode: cfg.hasMode ? (mIn.mode === "PRESS" ? "PRESS" : "WROT") : null  
+      };  
+  
+      for (const t of cfg.pipeTypes) {  
+        for (const s of cfg.pipeSizes) {  
+          const k = `${t}|${s}`;  
+          let val = 0;  
+          if (mIn.pipeLengths && typeof mIn.pipeLengths === "object") {  
+            if (Object.prototype.hasOwnProperty.call(mIn.pipeLengths, k)) {  
+              val = parseInt(mIn.pipeLengths[k], 10) || 0;  
+            }  
+          }  
+          mOut.pipeLengths[k] = val;  
+        }  
+      }  
+  
+      const fitIn = Array.isArray(mIn.fittings) ? mIn.fittings : [];  
+      mOut.fittings = [];  
+      mOut.fitIdCounter = 1;  
+      for (const item of fitIn) {  
+        const group = String(item.group || "Custom");  
+        const baseName = String(item.baseName || item.name || "");  
+        const size = String(item.size || "");  
+        const qty = Number.isFinite(item.qty) ? item.qty : 0;  
+        mOut.fittings.push({  
+          id: mOut.fitIdCounter++,  
+          group,  
+          baseName,  
+          size,  
+          qty  
+        });  
+      }  
+  
+      materials[key] = mOut;  
+    }  
+  
+    currentMaterialKey =  
+      data.currentMaterialKey && MATERIAL_KEYS.includes(data.currentMaterialKey)  
+        ? data.currentMaterialKey  
+        : "copper";  
+  
+    renderAll();  
+    alert("Project loaded.");  
+  }  
+  
+  // ----- RENDER ALL -----  
+  function renderAll() {  
+    buildTabBar();  
+    buildPipeSection();  
+    buildModeSection();  
+    buildControlsSection();  
+    buildFittingHeader();  
+    buildBottomButtons();  
+    refreshPipeDisplayAll();  
+    renderFittingsList();  
+  }  
+  
+  document.addEventListener("DOMContentLoaded", renderAll);  
+})();  
+</script>  
+</body>  
+</html>  
